@@ -1,7 +1,7 @@
 "-----------------------------------------------------------------------------------------
 " Jabez Athota's gvimrc.
 " Description: settings for gvim and behaviours of the plugins.
-" last edited : 09 February, 2016.
+" last edited : 19 May, 2016.
 "-----------------------------------------------------------------------------------------
 
 " {{{ All misc settings 
@@ -29,11 +29,28 @@ set wildmenu            " better command line completion
 "}}}
 
 "{{{ Folding of the code
-"set foldenable
-"set foldlevelstart=10
-set foldmethod=manual    " folding Stuffs
+set nofoldenable
+set foldlevelstart=10
+set foldmethod=marker   " folding Stuffs
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
+autocmd FileType c set foldmethod=syntax
+autocmd FileType cpp set foldmethod=syntax
+autocmd FileType python set foldmethod=indent
+autocmd FileType sh set foldmethod=marker
+autocmd FileType java set foldmethod=marker
+autocmd FileType javascript set foldmethod=marker
+"autocmd FileType html set foldmethod=indent
+"autocmd FileType ruby set foldmethod=syntax
+"autocmd FileType actionscript set foldmethod=marker
+"autocmd FileType cs set foldmethod=syntax
+"autocmd FileType css set foldmethod=marker
+"autocmd FileType go set foldmethod=marker
+"autocmd FileType objc set foldmethod=marker
+"autocmd FileType objcpp set foldmethod=marker
+"autocmd FileType php set foldmethod=indent
+"autocmd FileType thrift set foldmethod=marker
+"autocmd FileType tex set foldmarker={{{,}}} foldmethod=marker
 "}}}
 
 "{{{ Tab navigation like firefox 
@@ -55,15 +72,18 @@ endif
 syntax enable
 set background=dark " change background to light for light BG
 colorscheme solarized
+" For toggling the background from light -> dark -> light
+call togglebg#map("")
+
 
 " No buffers and swap files
-set nobackup
-set noswapfile
+"set nobackup
+"set noswapfile
 
 " Set the backup and swap directory
-"set undodir=~/vimfiles/undo//
-"set backupdir=~/vimfiles/backup//
-"set directory=~/vimfiles/swp//
+set undodir=$USERPROFILE/vimfiles/undo//
+set backupdir=$USERPROFILE/vimfiles/backup//
+set directory=$USERPROFILE/vimfiles/swp//
 
 " Show the matching brace
 set showmatch
@@ -78,7 +98,6 @@ set smartcase
 " To load and recognize the plugins
 filetype on
 filetype plugin on
-
 
 " Color of the cursor
 highlight Cursor guifg=Black  guibg=White
@@ -184,7 +203,7 @@ autocmd BufRead *.xml set nowrap
 " Toggle wrap 
 function ToggleWrap()
  if (&wrap == 1)
-     set nowrap
+    set nowrap
  else
    set wrap
  endif
@@ -269,4 +288,14 @@ nnoremap <silent> <Leader>m :SignatureToggle<CR>
 
 "{{{ Indent-Guides
 nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
+"}}}
+
+"{{{ delimitMate
+let delimitMate_expand_cr = 1
+let delimitMate_expand_space = 1
+"}}}
+
+"{{{ Taboo for tab line
+let taboo_tab_format = "%N-> %f %m"
+let taboo_modified_tab_flag = "+"
 "}}}
