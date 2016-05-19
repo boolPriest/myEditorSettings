@@ -17,7 +17,6 @@ Plugin 'scrooloose/nerdcommenter'
 Plugin 'Kien/ctrlp.vim'
 Plugin 'vim-scripts/a.vim'
 Plugin 'vim-scripts/Align'
-Plugin 'tpope/vim-surround'
 Plugin 'vim-airline/vim-airline'
 Plugin 'sjl/gundo.vim'
 Plugin 'xolox/vim-misc'
@@ -25,6 +24,8 @@ Plugin 'xolox/vim-session'
 Plugin 'kshenoy/vim-signature'
 Plugin 'vim-scripts/SearchComplete'
 Plugin 'nathanaelkane/vim-indent-guides'
+Plugin 'Raimondi/delimitMate'
+Plugin 'gcmt/taboo.vim'
 
 " Need Lua for these below plugins
 "Plugin 'Shougo/neocomplete.vim'
@@ -33,6 +34,9 @@ Plugin 'nathanaelkane/vim-indent-guides'
 
 " Not supported in office windows machine
 "Plugin 'Rip-Rip/clang_complete'
+
+" No longer required or updated with other plugins
+"Plugin 'tpope/vim-surround'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
