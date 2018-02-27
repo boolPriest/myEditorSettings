@@ -1,10 +1,10 @@
 "-----------------------------------------------------------------------------------------
 " Jabez Athota's vimrc.
 " Description: settings for gvim and behaviours of the plugins.
-" last edited : 09 February, 2016.
+" last edited : 27-02-2018
 "-----------------------------------------------------------------------------------------
 
-" ----------------------------This is for Vundle Settings---------------------------------
+" ---------------------------- This is for Vundle Settings ---------------------------------
 set nocompatible
 filetype off
 
@@ -13,113 +13,80 @@ filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
+" ----------- All Plugin List --------------------
 " Plugins that needs to be installed
 Plugin 'VundleVim/Vundle.vim'
 
 " colours
-Plugin 'altercation/vim-colors-solarized'
+"Plugin 'altercation/vim-colors-solarized'
+Plugin 'morhetz/gruvbox'
 
-" plugins
-Plugin 'scrooloose/nerdtree'
+" File navigation
+Plugin 'tpope/vim-vinegar'
+"Plugin 'scrooloose/nerdtree'
+
+" Commenting in source files
 Plugin 'scrooloose/nerdcommenter'
-Plugin 'Shougo/neocomplete.vim'
-Plugin 'Shougo/neosnippet'
-Plugin 'Shougo/neosnippet-snippets'
-Plugin 'Kien/ctrlp.vim'
+
+" For auto completion
+Plugin 'Valloric/YouCompleteMe'
+"Plugin 'davidhalter/jedi-vim'        " For Python
+
+" Snippets
+Plugin 'SirVer/ultisnips'
+Plugin 'honza/vim-snippets'
+
+" File searching
+Plugin 'ctrlpvim/ctrlp.vim'
+
+" Cpp->h and h->cpp
 Plugin 'vim-scripts/a.vim'
+
+" Align the code
 Plugin 'vim-scripts/Align'
-Plugin 'tpope/vim-surround'
-Plugin 'vim-airline/vim-airline'
-Plugin 'Rip-Rip/clang_complete'
+
+" Gundo
 Plugin 'sjl/gundo.vim'
+
+" Saving Sessions
 Plugin 'xolox/vim-misc'
 Plugin 'xolox/vim-session'
+
+" Marks
 Plugin 'kshenoy/vim-signature'
+
+" Tab completion of words when searching
 Plugin 'vim-scripts/SearchComplete'
+
+" Indent guides enable
+Plugin 'nathanaelkane/vim-indent-guides'
+
+" Auto closing 
+Plugin 'jiangmiao/auto-pairs'
+"Plugin 'cohama/lexima.vim'
+
+" Plugin for Tabs
+Plugin 'gcmt/taboo.vim'
+
+" Get the diff of Directories
+Plugin 'will133/vim-dirdiff'
+
+" Bottom status line of Vim
+Plugin 'vim-airline/vim-airline'
+
+" Enhanced highlight for cpp and C
+Plugin 'justinmk/vim-syntax-extra'
+"Plugin 'octol/vim-cpp-enhanced-highlight'
+
+" ---------------- End of Plugin List ---------------
 
 call vundle#end()
 filetype plugin indent on 
 "}}}
 
 "----------------------------------- PLUGIN SETTINGS ---------------------------------
-"{{{ NeoComplete settings
-" Disable AutoComplPop.
-let g:acp_enableAtStartup = 0
-" NeoComplete settings
-let g:neocomplete#enable_at_startup = 1
-let g:neocomplete#enable_smart_case = 1
-let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
-
-" Define dictionary.
-let g:neocomplete#sources#dictionary#dictionaries = {
-            \ 'default' : '',
-            \ 'vimshell' : $HOME.'/.vimshell_hist',
-            \ 'scheme' : $HOME.'/.gosh_completions'
-            \ }
-
-" Define keyword.
-if !exists('g:neocomplete#keyword_patterns')
-    let g:neocomplete#keyword_patterns = {}
-endif
-let g:neocomplete#keyword_patterns['default'] = '\h\w*'
-
-" Plugin key-mappings.
-inoremap <expr><C-g>     neocomplete#undo_completion()
-inoremap <expr><C-l>     neocomplete#complete_common_string()
-
-" Recommended key-mappings.
-" <CR>: close popup and save indent.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function()
-    "return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
-    " For no inserting <CR> key.
-    return (pumvisible() ? "\<C-y>" : "\<CR>" )
-endfunction
-
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-" <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-" Close popup by <Space>.
-"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
-
-" AutoComplPop like behavior.
-let g:neocomplete#enable_auto_select = 1
-
-" Shell like behavior (not recommended.)
-"set completeopt+=longest
-"let g:neocomplete#enable_auto_select = 1
-"let g:neocomplete#disable_auto_complete = 1
-"inoremap <expr><TAB>  pumvisible() ? "\<Down>" :
-" \ neocomplete#start_manual_complete()
-
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-
-" Enable heavy omni completion.
-if !exists('g:neocomplete#sources#omni#input_patterns')
-    let g:neocomplete#sources#omni#input_patterns = {}
-endif
-if !exists('g:neocomplete#force_omni_input_patterns')
-    let g:neocomplete#force_omni_input_patterns = {}
-endif
-let g:neocomplete#sources#omni#input_patterns.c =
-                        \ '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?'
-let g:neocomplete#sources#omni#input_patterns.cpp =
-                        \ '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
-
-" For smart TAB completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" :
-        \ <SID>check_back_space() ? "\<TAB>" :
-        \ neocomplete#start_manual_complete()
-  function! s:check_back_space() "{{{
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
-  endfunction"}}}
+"{{{ Clang-complete settings
+" path to directory where library can be found
+"let g:clang_library_path='/usr/lib/llvm-3.5/lib/libclang-3.5.so.1'
 "}}}
- 
+
