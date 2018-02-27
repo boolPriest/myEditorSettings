@@ -1,7 +1,7 @@
 "-----------------------------------------------------------------------------------------
 " Jabez Athota's gvimrc.
 " Description: settings for gvim and behaviours of the plugins.
-" last edited : 09 February, 2016.
+" last edited : 27-02-2018
 "-----------------------------------------------------------------------------------------
 
 " {{{ All misc settings 
@@ -9,7 +9,8 @@ set bs=2                " set back space
 set autowrite           " write to buffer when exiting
 au FileType * setl fo-=cro      " for disabling auto comments
 set cursorline          " highlight Current line
-set autochdir           " always switch to the current file directory.
+"set autochdir           " always switch to the current file directory.
+autocmd BufEnter * silent! lcd %:p:h
 set autoread            " set to auto read when a file is changed from outside.
 set nolazyredraw        " set no lazyredraw
 set number              " show number of the line when opening gvim
@@ -29,11 +30,28 @@ set wildmenu            " better command line completion
 "}}}
 
 "{{{ Folding of the code
-"set foldenable
-"set foldlevelstart=10
-set foldmethod=manual    " folding Stuffs
+set nofoldenable
+set foldlevelstart=10
+set foldmethod=marker  " folding Stuffs
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
+autocmd FileType c set foldmethod=syntax
+autocmd FileType cpp set foldmethod=syntax
+autocmd FileType python set foldmethod=indent
+autocmd FileType sh set foldmethod=marker
+autocmd FileType java set foldmethod=marker
+autocmd FileType javascript set foldmethod=marker
+"autocmd FileType html set foldmethod=indent
+"autocmd FileType ruby set foldmethod=syntax
+"autocmd FileType actionscript set foldmethod=marker
+"autocmd FileType cs set foldmethod=syntax
+"autocmd FileType css set foldmethod=marker
+"autocmd FileType go set foldmethod=marker
+"autocmd FileType objc set foldmethod=marker
+"autocmd FileType objcpp set foldmethod=marker
+"autocmd FileType php set foldmethod=indent
+"autocmd FileType thrift set foldmethod=marker
+"autocmd FileType tex set foldmarker={{{,}}} foldmethod=marker
 "}}}
 
 "{{{ Tab navigation like firefox 
@@ -52,9 +70,20 @@ syntax on
 endif
 
 " set the colorscheme 
+"-----------------------------------
 syntax enable
-set background=dark " change background to light for light BG
-colorscheme solarized
+colorscheme gruvbox
+set background=light
+
+function ToggleThisBG()  
+    if &background=="dark"
+        set background=light
+    else
+        set background=dark
+    endif
+endfunction
+
+map <F5> :call ToggleThisBG()<CR>
 
 " No buffers and swap files
 "set nobackup
@@ -92,13 +121,14 @@ set undolevels=200
 if has("gui_running")
   " GUI is running or is about to start.
   " Maximize gvim window.
+  set guifont=Monospace\ 12
   set lines=999 
   set columns=999
 endif
 
-" Create Blank Newlines and stay in Normal mode 
-nnoremap <silent> zj o<Esc> 
-nnoremap <silent> zk O<Esc> 
+" Create Blank Newlines and stay in insert mode 
+nnoremap <silent> zj o<ESC>
+nnoremap <silent> zk O<ESC>
 
 " Edit vimrc \ev 
 nnoremap <silent> <Leader>ev :tabnew<CR>:e ~/.vimrc<CR> 
@@ -108,7 +138,7 @@ nnoremap <silent> <Leader>gv :tabnew<CR>:e ~/.gvimrc<CR>
 
 " Search mappings: These will make it so that going to the next one in a 
 " Search will center on the line it's found in.  
-map N Nzz 
+map N Nzz
 map n nzz
 
 " {{{ Set the tab width (indent width) for the files - IndentWidth = 4 
@@ -173,9 +203,20 @@ set linebreak
 set wrap
 
 "Dont wrap the text for programming files.
-"autocmd BufRead *.txt set wrap
-"autocmd BufRead *.log set wrap
+autocmd BufRead *.txt set nowrap
+autocmd BufRead *.log set nowrap
 autocmd BufRead *.xml set nowrap
+
+" Toggle wrap 
+function ToggleWrap()
+ if (&wrap == 1)
+    set nowrap
+ else
+   set wrap
+ endif
+endfunction
+
+map ,w :call ToggleWrap()<CR>
 "}}}
 
 " {{{ For no sounds and blinking. No annoying error noises 
@@ -209,7 +250,16 @@ fun! <SID>StripTrailingWhitespaces()
 endfun
 
 "Bind RemoveSpaces to autocommand
-autocmd FileType c,cpp,h,xml,py autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
+autocmd FileType c,cpp,h,xml,py,log autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
+"}}}
+
+" {{{ Set tags to work with vim.
+set tags+=~/.vim/tags/cpp_tags
+set tags+=~/.vim/tags/gl_tags
+set tags+=~/.vim/tags/vulkan_tags
+
+" build tags of your own project with Ctrl-F12
+map <C-F12> :!ctags -R --sort=yes --c++-kinds=+p --fields=+liaSmt --extra=+q -I _GLIBCXX_NOEXCEPT .<CR>
 "}}}
 
 "----------------------------------- ALL PLUGIN SETTINGS ---------------------------------
@@ -218,21 +268,30 @@ map ,h :AT<CR>
 map ,g :A<CR>
 "}}}
 
-"{{{ NERD_tree.vim: NerdTree settings 
-let NERDChristmasTree = 1 
-let NERDTreeShowBookmarks = 1 
-let NERDTreeShowLineNumbers = 1 
-let NERDTreeWinPos = "left" 
-let NERDTreeQuitOnOpen = 1 
-"}}} 
-
 " {{{ Vim-Airline settings
 let g:airline_section_b = '%{getcwd()}'
 let g:airline_section_c = '%t'
 "}}}
 
 "{{{ Ctrl-P settings
-let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+let g:ctrlp_cmd = 'CtrlPMixed'
+let g:ctrlp_root_markers = ['.git']
+let g:ctrlp_by_filename = 1 " Search by File name
+let g:ctrlp_switch_buffer = 'Et' " Jump to the tab if already open
+let g:ctrlp_match_window = 'bottom,order:tbb,min:1,max:20,results:20'
+let g:ctrlp_show_hidden = 1
+let g:ctrlp_open_new_file = 't' " open new file in a tab
+let g:ctrlp_tabpage_position = 'ac'  " open the tab after current tab
+let g:ctrlp_open_multiple_files = 'tj' " open in new tabs and jump to first tab
+"let g:ctrlp_working_path_mode = 'c'
+if executable('ag')
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
+  " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+endif
+" below setting is ignored as we are using custom listing
+"let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 "}}}
 
 "{{{ Save Sessions settings 
@@ -246,9 +305,91 @@ let g:session_autosave = 'yes'
 
 "{{{ gUndo settings 
 nnoremap <C-F5> :GundoToggle<CR>
+let g:gundo_prefer_python3 = 1
 "}}}
 
 "{{{ Signature settings (For managing marks)
-nnoremap <silent> <Leader>m :SignatureToggle<CR>
+"nnoremap <silent> <Leader>m :SignatureToggle<CR>
 "}}}
 
+"{{{ Indent-Guides
+nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
+"}}}
+
+"{{{ AutoPairs
+let g:AutoPairsFlyMode = 1
+" '<M-p>' (Alt + p)
+let g:AutoPairsShortcutToggle = 'ð'
+" '<M-e>' (Alt + e)
+let g:AutoPairsShortcutFastWrap = 'å'
+" '<M-n>' (Alt + n)
+let g:AutoPairsShortcutJump = 'î'
+" '<M-b>' (Alt + b)
+let g:AutoPairsShortcutBackInsert = 'â'
+" New AutoPairs
+let g:AutoPairs['<']='>'
+"}}}
+
+"{{{ Taboo for tab line
+let taboo_tab_format = "%N.%W => %f %m"
+let taboo_modified_tab_flag = "[+]"
+"}}}
+ 
+"{{{ YCM settings
+let g:ycm_error_symbol = 'E>'
+let g:ycm_warning_symbol = 'W>'
+let g:ycm_disable_for_files_larger_than_kb = 0
+let g:ycm_autoclose_preview_window_after_insertion = 1
+
+"let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
+"let g:ycm_enable_diagnostic_highlighting = 0
+"let g:ycm_complete_in_comments = 1
+"let g:ycm_autoclose_preview_window_after_completion = 0
+"}}}
+
+if executable('ag')
+  " Use Ag over Grep
+  set grepprg=ag\ --nogroup\ --nocolor
+endif
+
+"{{{ Change the sorting sequence for netrw
+nnoremap <silent> <F4> :Vexplore<CR>
+let g:netrw_browse_split = 0
+let g:netrw_winsize = 23
+let g:netrw_liststyle = 0
+let g:netrw_altv = 1
+let g:netrw_sort_sequence= '[\/]$,\<core\%(\.\d\+\)\=\>,\.cpp$,\.c$,\.h$,\.hpp$,*,\.o$,\.obj$,\.txt$,\.info$,\.swp$,\.bak$,\~$'
+"}}}
+
+" Change the setting in maps_keys.vim in ultisnips folder
+"{{{ Ultisnips Settings
+"let g:UltiSnipsExpandTrigger = "<c-j>"
+"let g:UltiSnipsJumpForwardTrigger = "<c-j>"
+"let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
+"}}}
+
+"{{{ NERD_tree.vim: NerdTree settings 
+"let NERDChristmasTree = 1
+"let NERDTreeShowBookmarks = 1
+"let NERDTreeShowLineNumbers = 1
+"let NERDTreeWinPos = "left"
+"let NERDTreeQuitOnOpen = 1
+"let NERDTreeMinimalUI=1
+"let NERDTreeSortOrder=['\/$', '\.cpp$', '\.c$', '\.h$', '\.txt$',  '\.git$', '\~$']
+"let NERDTreeShowHidden=1
+"}}} 
+
+"{{{ Gruvbox plugin settings
+let g:gruvbox_contrast_dark='hard'
+let g:gruvbox_contrast_light='soft'
+let g:gruvbox_italicize_strings='1'
+"}}}
+
+"{{{ NerdCommenter
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+" Allow commenting and inverting empty lines (useful when commenting a region)
+let g:NERDCommentEmptyLines = 1
+" Enable trimming of trailing whitespace when uncommenting
+let g:NERDTrimTrailingWhitespace = 1
+" }}}
