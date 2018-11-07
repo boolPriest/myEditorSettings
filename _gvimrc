@@ -1,15 +1,17 @@
 "-----------------------------------------------------------------------------------------
 " Jabez Athota's gvimrc.
 " Description: settings for gvim and behaviours of the plugins.
-" last edited : 19 May, 2016.
+" last edited : 27-02-2018
 "-----------------------------------------------------------------------------------------
 
 " {{{ All misc settings 
+" set nocompatible
 set bs=2                " set back space
 set autowrite           " write to buffer when exiting
 au FileType * setl fo-=cro      " for disabling auto comments
 set cursorline          " highlight Current line
-set autochdir           " always switch to the current file directory.
+"set autochdir           " always switch to the current file directory.
+autocmd BufEnter * silent! lcd %:p:h
 set autoread            " set to auto read when a file is changed from outside.
 set nolazyredraw        " set no lazyredraw
 set number              " show number of the line when opening gvim
@@ -28,12 +30,16 @@ set wildmenu            " better command line completion
 "set lazyredraw         " for faster efficiency when macros are using
 "}}}
 
+" To load and recognize the plugins
+filetype on
+filetype plugin on
+
 "{{{ Folding of the code
+" filetype plugin indent on
 set nofoldenable
 set foldlevelstart=10
-set foldmethod=marker   " folding Stuffs
-nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
-vnoremap <Space> zf
+" set foldmethod=marker  " folding Stuffs
+
 autocmd FileType c set foldmethod=syntax
 autocmd FileType cpp set foldmethod=syntax
 autocmd FileType python set foldmethod=indent
@@ -51,6 +57,9 @@ autocmd FileType javascript set foldmethod=marker
 "autocmd FileType php set foldmethod=indent
 "autocmd FileType thrift set foldmethod=marker
 "autocmd FileType tex set foldmarker={{{,}}} foldmethod=marker
+
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
+vnoremap <Space> zf
 "}}}
 
 "{{{ Tab navigation like firefox 
@@ -69,21 +78,41 @@ syntax on
 endif
 
 " set the colorscheme 
+"-----------------------------------
+"{{{
 syntax enable
-set background=dark " change background to light for light BG
-colorscheme solarized
-" For toggling the background from light -> dark -> light
-call togglebg#map("")
+colorscheme gruvbox
+set background=dark
 
+" Color of the cursor
+highlight Cursor guifg=Red guibg=White
+highlight iCursor guifg=White guibg=Red
+
+function ToggleThisBG()  
+    if &background=="dark"
+        set background=light
+        " Color of the cursor
+        highlight Cursor guifg=Red guibg=White
+        highlight iCursor guifg=White guibg=Red
+    else
+        set background=dark
+        " Color of the cursor
+        highlight Cursor guifg=Red guibg=White
+        highlight iCursor guifg=White guibg=Red
+    endif
+endfunction
+
+map <F5> :call ToggleThisBG()<CR>
+"}}}
 
 " No buffers and swap files
 "set nobackup
 "set noswapfile
 
 " Set the backup and swap directory
-set undodir=$USERPROFILE/vimfiles/undo//
-set backupdir=$USERPROFILE/vimfiles/backup//
-set directory=$USERPROFILE/vimfiles/swp//
+set undodir=~/vimfiles/_undo//
+set backupdir=~/vimfiles/_backup//
+set directory=~/vimfiles/_swp//
 
 " Show the matching brace
 set showmatch
@@ -95,14 +124,6 @@ set ignorecase
 set smartcase
 "set incsearch
 
-" To load and recognize the plugins
-filetype on
-filetype plugin on
-
-" Color of the cursor
-highlight Cursor guifg=Black  guibg=White
-highlight iCursor guifg=white guibg=steelblue
-
 " History options
 set history=100
 set undolevels=200
@@ -111,55 +132,49 @@ set undolevels=200
 if has("gui_running")
   " GUI is running or is about to start.
   " Maximize gvim window.
+  set guifont=Consolas:h14
   set lines=999 
   set columns=999
-  set guifont=Consolas:h12:cANSI
 endif
 
-" Create Blank Newlines and stay in Normal mode 
-nnoremap <silent> zj o<Esc> 
-nnoremap <silent> zk O<Esc> 
+" Create Blank Newlines and stay in insert mode 
+nnoremap <silent> zj o<ESC>
+nnoremap <silent> zk O<ESC>
 
 " Edit vimrc \ev 
-nnoremap <silent> <Leader>ev :tabnew<CR>:e ~\_vimrc<CR> 
+nnoremap <silent> <Leader>ev :tabnew<CR>:e ~/_vimrc<CR> 
 
 " Edit gvimrc \gv 
-nnoremap <silent> <Leader>gv :tabnew<CR>:e ~\_gvimrc<CR>
+nnoremap <silent> <Leader>gv :tabnew<CR>:e ~/_gvimrc<CR>
 
 " Search mappings: These will make it so that going to the next one in a 
 " Search will center on the line it's found in.  
-map N Nzz 
+map N Nzz
 map n nzz
 
-" {{{ Set the tab width (indent width) for the files - IndentWidth = 4 
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
+" {{{ Set the tab width (indent width) for the files - IndentWidth = 2 
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
 set expandtab
 "}}}
 
 " For indenting the files
-au BufNewFile,BufRead *.cpp,*.h,*.c set autoindent 
-au BufNewFile,BufRead *.cpp,*.h,*.c set smartindent  
-
-au! FileType python setl nosmartindent
-
-" set tab settings for other files
-au BufNewFile,BufRead *.js, *.html, *.css set tabstop=2 
-au BufNewFile,BufRead *.js, *.html, *.css set softtabstop=2 
-au BufNewFile,BufRead *.js, *.html, *.css set shiftwidth=2 
+au BufNewFile,BufRead *.py,*.cpp,*.h,*.c set autoindent 
+au BufNewFile,BufRead *.py,*.cpp,*.h,*.c set smartindent  
 
 " Use the below highlight group when displaying bad whitespace is desired.
-"highlight BadWhitespace ctermbg=red guibg=red
+highlight BadWhitespace ctermbg=red guibg=Grey
 
 " Display tabs at the beginning of a line in Python mode as bad.
-"au BufRead,BufNewFile *.py,*.pyw match BadWhitespace /^\t\+/
-
+au BufRead,BufNewFile *.py,*.pyw match BadWhitespace /^\t\+/
 " Make trailing whitespace be flagged as bad.
-"au BufRead,BufNewFile *.py,*.pyw,*.c,*.h,*.cpp match BadWhitespace /\s\+$/
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h,*.cpp match BadWhitespace /\s\+$/
 
 " Wrap text after a certain number of characters
-au BufRead,BufNewFile *.py,*.pyw, set textwidth=100
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h,*.cpp set textwidth=80
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h,*.cpp highlight ColorColumn ctermbg=black
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h,*.cpp set colorcolumn=80
 
 " Use UNIX (\n) line endings.
 au BufNewFile *.py,*.pyw,*.c,*.h,*.cpp set fileformat=unix
@@ -168,7 +183,7 @@ au BufNewFile *.py,*.pyw,*.c,*.h,*.cpp set fileformat=unix
 let python_highlight_all = 1
 
 " Set the default file encoding to UTF-8:
-set encoding=utf-8
+" set encoding=utf-8
 
 " {{{ For search highlighting 
 set hlsearch
@@ -225,14 +240,14 @@ map :wQ :wq
 map :Q :q
 "}}}
 
-" {{{ cut and copy options 
+" {{{ cut and copy options
 vmap <C-c> "+yi
 vmap <C-x> "+c
 vmap <C-v> c<ESC>"+p
 imap <C-v> <ESC>"+pa
 "}}}
 
-" {{{ Remove all spaces from end in each line 
+" {{{ Remove all spaces from end in each line
 fun! <SID>StripTrailingWhitespaces()
     let _s=@/
     let line = line(".")
@@ -246,27 +261,100 @@ endfun
 autocmd FileType c,cpp,h,xml,py,log autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
 "}}}
 
-"----------------------------------- ALL PLUGIN SETTINGS ---------------------------------
-" {{{ a.vim: for switching b/w header files and source files 
-map ,h :AT<CR>
-map ,g :A<CR>
+" {{{ Set tags to work with vim.
+set tags+=~/vimfiles/tags/cpp_tags
+set tags+=~/vimfiles/tags/gl_tags
+set tags+=~/vimfiles/tags/vulkan_tags
+
+" build tags of your own project with Ctrl-F12
+map <C-F12> :!ctags -R --sort=yes --c++-kinds=+p --fields=+liaSmt --extra=+q -I _GLIBCXX_NOEXCEPT .<CR>
 "}}}
 
-"{{{ NERD_tree.vim: NerdTree settings 
-let NERDChristmasTree = 1 
-let NERDTreeShowBookmarks = 1 
-let NERDTreeShowLineNumbers = 1 
-let NERDTreeWinPos = "left" 
-let NERDTreeQuitOnOpen = 1 
-"}}} 
+"----------------------------------- ALL PLUGIN SETTINGS ---------------------------------
+" {{{ a.vim: for switching b/w header files and source files
+map ,h :AT<CR>
+map ,g :IHT<CR>
+"}}}
 
 " {{{ Vim-Airline settings
 let g:airline_section_b = '%{getcwd()}'
 let g:airline_section_c = '%t'
 "}}}
 
+"{{{ AutoPairs
+let g:AutoPairsFlyMode = 1
+" '<M-p>' (Alt + p)
+let g:AutoPairsShortcutToggle = 'ð'
+" '<M-e>' (Alt + e)
+let g:AutoPairsShortcutFastWrap = 'å'
+" '<M-n>' (Alt + n)
+let g:AutoPairsShortcutJump = 'î'
+" '<M-b>' (Alt + b)
+let g:AutoPairsShortcutBackInsert = 'â'
+" New AutoPairs
+let g:AutoPairs['<']='>'
+"}}}
+
 "{{{ Ctrl-P settings
-let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+let g:ctrlp_cmd = 'CtrlPMixed'
+let g:ctrlp_root_markers = ['.git']
+let g:ctrlp_by_filename = 1 " Search by File name
+let g:ctrlp_switch_buffer = 'Et' " Jump to the tab if already open
+let g:ctrlp_match_window = 'bottom,order:tbb,min:1,max:20,results:20'
+let g:ctrlp_show_hidden = 1
+let g:ctrlp_open_new_file = 't' " open new file in a tab
+let g:ctrlp_tabpage_position = 'ac'  " open the tab after current tab
+let g:ctrlp_open_multiple_files = 'tj' " open in new tabs and jump to first tab
+let g:ctrlp_user_command = 'dir %s /-n /b /s /a-d'
+let g:ctrlp_clear_cache_on_exit = 0
+"let g:ctrlp_working_path_mode = 'c'
+" below setting is ignored as we are using custom listing
+"let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
+
+if executable('ag')
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
+  " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+
+  " Use AG over grep
+  set grepprg=ag\ --nogroup\ --nocolor
+endif
+
+"}}}
+
+"{{{ Gruvbox plugin settings
+let g:gruvbox_contrast_dark='hard'
+let g:gruvbox_contrast_light='soft'
+let g:gruvbox_italicize_strings='1'
+"}}}
+
+"{{{ gUndo settings 
+nnoremap <C-F5> :GundoToggle<CR>
+let g:gundo_prefer_python3 = 1
+"}}}
+
+"{{{ Indent-Guides
+nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
+"}}}
+
+"{{{ NerdCommenter
+" Add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+" Allow commenting and inverting empty lines (useful when commenting a region)
+let g:NERDCommentEmptyLines = 1
+" Enable trimming of trailing whitespace when uncommenting
+let g:NERDTrimTrailingWhitespace = 1
+" }}}
+
+"{{{ Change the sorting sequence for netrw
+nnoremap <silent> <F4> :Vexplore<CR>
+let g:netrw_browse_split = 0
+let g:netrw_winsize = 23
+let g:netrw_liststyle = 0
+let g:netrw_altv = 1
+let g:netrw_sort_sequence = '[\/]$,\<core\%(\.\d\+\)\=\>,\.cpp$,\.c$,\.h$,\.hpp$,*,\.o$,\.obj$,\.txt$,\.info$,\.swp$,\.bak$,\~$'
+let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'  " For adding line numbers to netrw file
 "}}}
 
 "{{{ Save Sessions settings 
@@ -278,24 +366,65 @@ let g:session_autoload = 'yes'
 let g:session_autosave = 'yes'
 "}}}
 
-"{{{ gUndo settings 
-nnoremap <C-F5> :GundoToggle<CR>
-"}}}
-
 "{{{ Signature settings (For managing marks)
-nnoremap <silent> <Leader>m :SignatureToggle<CR>
-"}}}
-
-"{{{ Indent-Guides
-nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
-"}}}
-
-"{{{ delimitMate
-let delimitMate_expand_cr = 1
-let delimitMate_expand_space = 1
+" nnoremap <silent> <Leader>m :SignatureToggle<CR>
 "}}}
 
 "{{{ Taboo for tab line
-let taboo_tab_format = "%N-> %f %m"
-let taboo_modified_tab_flag = "+"
+let taboo_tab_format = "%N.%W => %f %m"
+let taboo_modified_tab_flag = "[+]"
+"}}}
+
+" README : Change the setting in maps_keys.vim in ultisnips folder
+"{{{ Ultisnips Settings
+"let g:UltiSnipsExpandTrigger = "<c-j>"
+"let g:UltiSnipsJumpForwardTrigger = "<c-j>"
+"let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
+
+" function! g:UltiSnips_Complete()
+  " call UltiSnips#ExpandSnippet()
+  " if g:ulti_expand_res == 0
+    " if pumvisible()
+      " return "\<C-n>"
+    " else
+      " call UltiSnips#JumpForwards()
+      " if g:ulti_jump_forwards_res == 0
+        " return "\<TAB>"
+      " endif
+    " endif
+  " endif
+  " return ""
+" endfunction
+"
+" function! g:UltiSnips_Reverse()
+  " call UltiSnips#JumpBackwards()
+  " if g:ulti_jump_backwards_res == 0
+    " return "\<C-P>"
+  " endif
+"
+  " return ""
+" endfunction
+"
+"
+" if !exists("g:UltiSnipsJumpForwardTrigger")
+  " let g:UltiSnipsJumpForwardTrigger = "<tab>"
+" endif
+"
+" if !exists("g:UltiSnipsJumpBackwardTrigger")
+  " let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+" endif
+"
+" au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
+" au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:UltiSnips_Reverse()<cr>"
+"}}}
+ 
+"{{{ YCM settings
+let g:ycm_error_symbol = 'E>'
+let g:ycm_warning_symbol = 'W>'
+let g:ycm_disable_for_files_larger_than_kb = 0
+let g:ycm_autoclose_preview_window_after_insertion = 1
+" let g:ycm_global_ycm_extra_conf = '~/vimfiles/.ycm_extra_conf.py'
+"let g:ycm_enable_diagnostic_highlighting = 0
+"let g:ycm_complete_in_comments = 1
+"let g:ycm_autoclose_preview_window_after_completion = 0
 "}}}
