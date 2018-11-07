@@ -1,43 +1,94 @@
-set nocompatible              " be iMproved, required
-filetype off                  " required
+"-----------------------------------------------------------------------------------------
+" Jabez Athota's vimrc.
+" Description: settings for gvim and behaviours of the plugins.
+" last edited : 27-02-2018
+"-----------------------------------------------------------------------------------------
 
+" ---------------------------- This is for Vundle Settings ---------------------------------
+set nocompatible
+" Set the default file encoding to UTF-8:
+set encoding=utf-8
+filetype off
+
+" {{{ Vundle Functions and settings
 " set the runtime path to include Vundle and initialize
-set rtp+=$HOME/vimfiles/bundle/Vundle.vim/
-call vundle#begin('$USERPROFILE/vimfiles/bundle/')
+set rtp+=$HOME/vimfiles/bundle/Vundle.vim
+call vundle#begin('$HOME/vimfiles/bundle')
 
+" ----------- All Plugin List --------------------
 " Plugins that needs to be installed
 Plugin 'VundleVim/Vundle.vim'
 
-" colours
-Plugin 'altercation/vim-colors-solarized'
-
-" plugins
-Plugin 'scrooloose/nerdtree'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'Kien/ctrlp.vim'
+" Cpp->h and h->cpp
 Plugin 'vim-scripts/a.vim'
-Plugin 'vim-scripts/Align'
+
+" Bottom status line of Vim
 Plugin 'vim-airline/vim-airline'
+
+" Align the code
+Plugin 'vim-scripts/Align'
+
+" Auto closing 
+Plugin 'jiangmiao/auto-pairs'
+"Plugin 'cohama/lexima.vim'
+
+" File searching
+Plugin 'ctrlpvim/ctrlp.vim'
+
+" Get the diff of Directories
+Plugin 'will133/vim-dirdiff'
+
+" colours
+"Plugin 'altercation/vim-colors-solarized'
+Plugin 'morhetz/gruvbox'
+
+" Gundo
 Plugin 'sjl/gundo.vim'
-Plugin 'xolox/vim-misc'
-Plugin 'xolox/vim-session'
-Plugin 'kshenoy/vim-signature'
-Plugin 'vim-scripts/SearchComplete'
+
+" Indent guides enable
 Plugin 'nathanaelkane/vim-indent-guides'
-Plugin 'Raimondi/delimitMate'
+
+" Commenting in source files
+Plugin 'scrooloose/nerdcommenter'
+
+" Tab completion of words when searching
+Plugin 'vim-scripts/SearchComplete'
+
+" Saving Sessions
+Plugin 'xolox/vim-session'
+Plugin 'xolox/vim-misc'
+
+" Marks
+Plugin 'kshenoy/vim-signature'
+
+" Snippets
+Plugin 'honza/vim-snippets'
+
+Plugin 'SirVer/ultisnips'
+
+" Enhanced highlight for cpp and C
+Plugin 'justinmk/vim-syntax-extra'
+"Plugin 'octol/vim-cpp-enhanced-highlight'
+
+" Plugin for Tabs
 Plugin 'gcmt/taboo.vim'
 
-" Need Lua for these below plugins
-"Plugin 'Shougo/neocomplete.vim'
-"Plugin 'Shougo/neosnippet'
-"Plugin 'Shougo/neosnippet-snippets'
+" File navigation
+Plugin 'tpope/vim-vinegar'
+"Plugin 'scrooloose/nerdtree'
 
-" Not supported in office windows machine
-"Plugin 'Rip-Rip/clang_complete'
+" For auto completion
+"Plugin 'Valloric/YouCompleteMe'
+Plugin 'davidhalter/jedi-vim'        " For Python
 
-" No longer required or updated with other plugins
-"Plugin 'tpope/vim-surround'
+" ---------------- End of Plugin List ---------------
 
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
+call vundle#end()
+filetype plugin indent on 
+"}}}
+
+"----------------------------------- PLUGIN SETTINGS ---------------------------------
+"{{{ Clang-complete settings
+" path to directory where library can be found
+"let g:clang_library_path='/usr/lib/llvm-3.5/lib/libclang-3.5.so.1'
+"}}}
