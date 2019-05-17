@@ -88,7 +88,7 @@ set background=dark
 highlight Cursor guifg=Red guibg=White
 highlight iCursor guifg=White guibg=Red
 
-function ToggleThisBG()  
+function ToggleBGColor()  
     if &background=="dark"
         set background=light
         " Color of the cursor
@@ -102,7 +102,7 @@ function ToggleThisBG()
     endif
 endfunction
 
-map <F5> :call ToggleThisBG()<CR>
+" map <F5> :call ToggleThisBG()<CR>
 "}}}
 
 " No buffers and swap files
@@ -387,7 +387,7 @@ let g:gutentags_ctags_tagfile = '.tags'
 " set the modules for tags
 let g:gutentags_modules = []
 if executable('ctags')
-	let g:gutentags_modules += ['ctags']
+  let g:gutentags_modules += ['ctags']
 endif
 if executable('gtags-cscope') && executable('gtags')
 	let g:gutentags_modules += ['gtags_cscope']
@@ -397,14 +397,26 @@ endif
 let s:vim_tags = expand('~/.vim/_tags')
 let g:gutentags_cache_dir = s:vim_tags
 
-let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extras=+q']
-let g:gutentags_ctags_extra_args += ['--c++-kinds=+pxI']
-let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
-let g:gutentags_ctags_extra_args += ['--exclude=*.html,*.css,*.js']
+let g:gutentags_ctags_exclude = ['*.html', '*.css', '*.js', '*.xml', 'Makefile',
+                                \ '*.mk', '*.config', '*.ld', '*.s', '*.in', '*.asm',
+                                \ '*.json', '*.m4', '*.am', '*.sh', '*.script', 
+                                \ '*conf', 'configure', 'libtool']
+
+let g:gutentags_ctags_extra_args = ['--fields=+niaz', '--extras=+q']
+let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
+let g:gutentags_ctags_extra_args += ['--c-kinds=+defghlmpstuvxzL']
+" let g:gutentags_ctags_extra_args += ['--exclude=*.html, *.css, *.js']
 let g:gutentags_ctags_extra_args += ['--output-format=e-ctags']
 
 let g:gutentags_auto_add_gtags_cscope = 0
 " let g:gutentags_plus_switch = 1
+"}}}
+
+"{{{ vim-preview
+autocmd FileType qf nnoremap <silent><buffer> p :PreviewQuickfix<cr>
+autocmd FileType qf nnoremap <silent><buffer> P :PreviewClose<cr>
+noremap <F4> :PreviewSignature!<cr>
+inoremap <F4> <c-\><c-o>:PreviewSignature!<cr>
 "}}}
 
 "{{{ NerdTree settings 
@@ -413,3 +425,8 @@ let NERDTreeSortOrder = ['\/$', '\.cpp$', '\.c$', '\.h$', 'Make', '[[-timestamp]
 let NERDTreeWinPos = "left"
 let NERDTreeQuitOnOpen = 1
 " }}}
+
+" {{{ Edit these settings in srcexpl.vim file
+"let g:SrcExpl_prevDefKey="<F7>" 
+"let g:SrcExpl_nextDefKey="<F8>" 
+"}}}
