@@ -26,7 +26,7 @@ Plugin 'vim-scripts/a.vim'
 Plugin 'vim-airline/vim-airline'
 
 " Align the code
-Plugin 'vim-scripts/Align'
+Plugin 'junegunn/vim-easy-align'
 
 " Auto closing 
 Plugin 'jiangmiao/auto-pairs'
@@ -85,7 +85,7 @@ Plugin 'rdnetto/YCM-Generator'
 " Plugin 'universal-ctags/ctags'
 Plugin 'ludovicchabant/vim-gutentags'
 
-"let g:gutentags_define_advanced_commands = 1
+" let g:gutentags_define_advanced_commands = 1
 
 let $GTAGSLABEL = 'native'
 let $GTAGSCONF = '/usr/local/share/gtags/gtags.conf'
