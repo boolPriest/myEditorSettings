@@ -1,7 +1,7 @@
 "-----------------------------------------------------------------------------------------
 " Jabez Athota's gvimrc.
 " Description: settings for gvim and behaviours of the plugins.
-" last edited : 03-05-2019
+" last edited : 24-05-2019
 "-----------------------------------------------------------------------------------------
 
 " {{{ All misc settings 
@@ -72,6 +72,12 @@ imap <F3> <ESC>:tabnext<cr>i
 nmap ,t :tabnew<cr>
 "}}}
 
+"{{{ Window navigation between split windows
+nmap <F1> :wincmd w<cr>
+map <F1> :wincmd w<cr>
+imap <F1> <ESC>:wincmd w<cr>i
+"}}} 
+
 " Switch on syntax highlighting if it wasn't on yet.
 if !exists("syntax_on")
 syntax on
@@ -87,20 +93,6 @@ set background=dark
 " Color of the cursor
 highlight Cursor guifg=Red guibg=White
 highlight iCursor guifg=White guibg=Red
-
-function ToggleBGColor()  
-    if &background=="dark"
-        set background=light
-        " Color of the cursor
-        highlight Cursor guifg=Red guibg=White
-        highlight iCursor guifg=White guibg=Red
-    else
-        set background=dark
-        " Color of the cursor
-        highlight Cursor guifg=Red guibg=White
-        highlight iCursor guifg=White guibg=Red
-    endif
-endfunction
 
 " map <F5> :call ToggleThisBG()<CR>
 "}}}
@@ -142,13 +134,13 @@ nnoremap <silent> zj o<ESC>
 nnoremap <silent> zk O<ESC>
 
 " Edit vimrc \ev 
-nnoremap <silent> <Leader>ev :tabnew<CR>:e ~/.vimrc<CR> 
+nnoremap <silent> <Leader>fv :tabnew<CR>:e ~/.vimrc<CR> 
 
 " Edit gvimrc \gv 
-nnoremap <silent> <Leader>gv :tabnew<CR>:e ~/.gvimrc<CR>
+nnoremap <silent> <Leader>fg :tabnew<CR>:e ~/.gvimrc<CR>
 
 " Open the help file \hv
-nnoremap <silent> <Leader>hv :tabnew<CR>:e ~/.vim/_commands.txt<CR>
+nnoremap <silent> <Leader>fh :tabnew<CR>:e ~/.vim/_commands.txt<CR>
 
 " Search mappings: These will make it so that going to the next one in a 
 " Search will center on the line it's found in.  
@@ -243,6 +235,9 @@ map :wQ :wq
 map :Q :q
 "}}}
 
+" Close quick fix or location list window
+noremap ,q :ccl <bar> lcl<CR>
+
 " {{{ cut and copy options
 vmap <C-c> "+yi
 vmap <C-x> "+c
@@ -274,159 +269,4 @@ autocmd FileType c,cpp,h,xml,py,log autocmd BufWritePre <buffer> :call <SID>Stri
 "}}}
 
 "----------------------------------- ALL PLUGIN SETTINGS ---------------------------------
-" {{{ a.vim: for switching b/w header files and source files
-map ,h :AT<CR>
-map ,g :IHT<CR>
-"}}}
-
-" {{{ Vim-Airline settings
-let g:airline_section_b = '%{getcwd()}'
-let g:airline_section_c = '%t'
-"}}}
-
-"{{{ AutoPairs
-let g:AutoPairsFlyMode            = 1
-let g:AutoPairsShortcutToggle     = 'ð' " '<M-p>' (Alt + p)
-let g:AutoPairsShortcutFastWrap   = 'å' " '<M-e>' (Alt + e)
-let g:AutoPairsShortcutJump       = 'î' " '<M-n>' (Alt + n)
-let g:AutoPairsShortcutBackInsert = 'â' " '<M-b>' (Alt + b)
-" New AutoPairs
-"let g:AutoPairs['<']='>'
-"}}}
-
-"{{{ Ctrl-P settings
-let g:ctrlp_cmd                 = 'CtrlPMixed'
-let g:ctrlp_root_markers        = ['.git']
-let g:ctrlp_by_filename         = 1 " Search by File name
-let g:ctrlp_switch_buffer       = 'Et' " Jump to the tab if already open
-let g:ctrlp_match_window        = 'bottom,order:tbb,min:1,max:20,results:20'
-let g:ctrlp_show_hidden         = 1
-let g:ctrlp_open_new_file       = 't' " open new file in a tab
-let g:ctrlp_tabpage_position    = 'ac'  " open the tab after current tab
-let g:ctrlp_open_multiple_files = 'tj' " open in new tabs and jump to first tab
-" let g:ctrlp_user_command      = 'dir %s /-n /b /s /a-d'
-let g:ctrlp_clear_cache_on_exit = 0
-"let g:ctrlp_working_path_mode  = 'c'
-" below setting is ignored as we are using custom listing
-" let g:ctrlp_custom_ignore     = '\v[\/]\.(git|hg|svn)$'
-
-if executable('ag')
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
-  " ag is fast enough that CtrlP doesn't need to cache
-  let g:ctrlp_use_caching = 0
-
-  " Use AG over grep
-  set grepprg=ag\ --nogroup\ --nocolor
-endif
-"}}}
-
-"{{{ Gruvbox plugin settings
-let g:gruvbox_contrast_dark='hard'
-let g:gruvbox_contrast_light='soft'
-let g:gruvbox_italicize_strings='1'
-"}}}
-
-"{{{ gUndo settings 
-" nnoremap <C-F5> :GundoToggle<CR>
-let g:gundo_prefer_python3 = 1
-"}}}
-
-"{{{ Indent-Guides
-nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
-"}}}
-
-"{{{ NerdCommenter
-" Add spaces after comment delimiters by default
-let g:NERDSpaceDelims = 1
-" Allow commenting and inverting empty lines (useful when commenting a region)
-let g:NERDCommentEmptyLines = 1
-" Enable trimming of trailing whitespace when uncommenting
-let g:NERDTrimTrailingWhitespace = 1
-" }}}
-
-"{{{ Save Sessions settings 
-let g:session_default_name = 'myDefaultSession'
-let g:session_default_overwrite = 1
-let g:session_extension = '.session'
-let g:session_autoload = 'yes'
-let g:session_autosave = 'prompt'
-"}}}
-
-"{{{ Signature settings (For managing marks)
-" nnoremap <silent> <Leader>m :SignatureToggle<CR>
-"}}}
-
-"{{{ Taboo for tab line
-let taboo_tab_format = "%N.%W => %f %m"
-let taboo_modified_tab_flag = "[+]"
-"}}}
-
-" README : Change the setting in maps_keys.vim in ultisnips folder
-"{{{ Ultisnips Settings
-"}}}
-
-"{{{ YCM settings
-let g:ycm_error_symbol = 'E>'
-let g:ycm_warning_symbol = 'W>'
-let g:ycm_disable_for_files_larger_than_kb = 0
-let g:ycm_autoclose_preview_window_after_insertion = 1
-
-" let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
-"let g:ycm_enable_diagnostic_highlighting = 0
-"let g:ycm_complete_in_comments = 1
-"let g:ycm_autoclose_preview_window_after_completion = 0
-"}}}
- 
-"{{{ Gutentags
-let g:gutentags_project_root = ['.JB_PROJ_ROOT']
-
-" tags file extension
-let g:gutentags_ctags_tagfile = '.tags'
-
-" set the modules for tags
-let g:gutentags_modules = []
-if executable('ctags')
-  let g:gutentags_modules += ['ctags']
-endif
-if executable('gtags-cscope') && executable('gtags')
-	let g:gutentags_modules += ['gtags_cscope']
-endif
-
-" set the dir where tags has to be placed
-let s:vim_tags = expand('~/.vim/_tags')
-let g:gutentags_cache_dir = s:vim_tags
-
-let g:gutentags_ctags_exclude = ['*.html', '*.css', '*.js', '*.xml', 'Makefile',
-                                \ '*.mk', '*.config', '*.ld', '*.s', '*.in', '*.asm',
-                                \ '*.json', '*.m4', '*.am', '*.sh', '*.script', 
-                                \ '*conf', 'configure', 'libtool']
-
-let g:gutentags_ctags_extra_args = ['--fields=+niaz', '--extras=+q']
-let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
-let g:gutentags_ctags_extra_args += ['--c-kinds=+defghlmpstuvxzL']
-" let g:gutentags_ctags_extra_args += ['--exclude=*.html, *.css, *.js']
-let g:gutentags_ctags_extra_args += ['--output-format=e-ctags']
-
-let g:gutentags_auto_add_gtags_cscope = 0
-" let g:gutentags_plus_switch = 1
-"}}}
-
-"{{{ vim-preview
-autocmd FileType qf nnoremap <silent><buffer> p :PreviewQuickfix<cr>
-autocmd FileType qf nnoremap <silent><buffer> P :PreviewClose<cr>
-noremap <F4> :PreviewSignature!<cr>
-inoremap <F4> <c-\><c-o>:PreviewSignature!<cr>
-"}}}
-
-"{{{ NerdTree settings 
-let NERDTreeShowBookmarks = 1
-let NERDTreeSortOrder = ['\/$', '\.cpp$', '\.c$', '\.h$', 'Make', '[[-timestamp]]', '*']
-let NERDTreeWinPos = "left"
-let NERDTreeQuitOnOpen = 1
-" }}}
-
-" {{{ Edit these settings in srcexpl.vim file
-"let g:SrcExpl_prevDefKey="<F7>" 
-"let g:SrcExpl_nextDefKey="<F8>" 
-"}}}
+" Refer to .vimrc
